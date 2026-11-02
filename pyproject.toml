@@ -1,2 +1,2 @@
 [dependency-groups]
-format = ["typos"]
+format = ["typos", "ruff"]
