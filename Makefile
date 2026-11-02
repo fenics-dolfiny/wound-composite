@@ -1,6 +1,9 @@
 all: format check
 
-format: typos ruff
+format: prettier typos ruff
+
+prettier:
+	npx prettier . --check --plugin prettier-plugin-toml
 
 typos:
 	uv run typos .
