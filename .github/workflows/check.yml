@@ -1,0 +1,35 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: 🔎
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: sudo apt install -y gitleaks
+      - run: make check
+
+  status-check:
+    name: ☑️
+    if: always()
+    needs: [check]
+    runs-on: ubuntu-latest
+    steps:
+      - if: >-
+          contains(needs.*.result, 'failure') ||
+          contains(needs.*.result, 'cancelled') ||
+          contains(needs.*.result, 'skipped')
+        run: exit 1
