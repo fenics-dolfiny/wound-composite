@@ -1,0 +1,54 @@
+[project]
+name = "wound-composite"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Daniel Durrenberger", email = "d.durrenberger@gradel.lu" }
+]
+requires-python = ">=3.14"
+dependencies = [
+]
+
+[project.scripts]
+wound-composite = "wound_composite:main"
+
+[build-system]
+requires = ["uv_build>=0.13.6,<0.14.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "bandit>=1.9.4",
+    "coverage>=7.17.0",
+    "mypy>=2.4.1",
+    "pip-audit>=2.10.1",
+    "ruff>=0.17.3",
+]
+
+[tool.ruff]
+target-version = "py314"
+line-length = 91
+
+[tool.ruff.lint]
+select = ["ALL"]
+# Preview rules only when listed by exact code below
+preview = true
+explicit-preview-rules = true
+extend-select = ["FURB113"]
+ignore = [
+    # Conflict with `ruff format`
+    "COM812", "ISC001",
+    # Mutually exclusive docstring styles: keep D211 and D212
+    "D203", "D213",
+]
+
+[tool.ruff.lint.pylint]
+max-args = 8
+
+[tool.ruff.lint.mccabe]
+max-complexity = 6
+
+
+[tool.uv.build-backend]
+module-root = ""
