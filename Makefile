@@ -3,6 +3,7 @@ install:
 
 check:
 	uv run ruff check .
+	uv run ruff format --check .
 	uv run mypy .
 	uv run bandit -r wound_composite/
 	uv run pip-audit --skip-editable
