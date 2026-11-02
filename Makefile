@@ -1,6 +1,11 @@
 .PHONY: all check gitleaks
 
-all: check
+all: format check
+
+format: typos
+
+typos:
+	uv run typos .
 
 check: gitleaks
 
