@@ -1,0 +1,9 @@
+.venv/
+uv.lock
+
+.ruff_cache/
+.mypy_cache/
+
+node_modules/
+package.json
+package-lock.json
