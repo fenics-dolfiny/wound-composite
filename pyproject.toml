@@ -64,9 +64,16 @@ warn_unused_ignores = true
 show_error_codes = true
 ignore_missing_imports = true
 
+[tool.coverage.run]
+source = ["wound_composite"]
+
+[tool.coverage.report]
+fail_under = 90
+
 [tool.bandit.assert_used]
 skips = ["test/*"]
 
 [dependency-groups]
 format = ["typos", "ruff"]
 check = ["bandit", "mypy"]
+test = ["pytest-cov"]
