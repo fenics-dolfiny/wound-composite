@@ -69,4 +69,4 @@ skips = ["test/*"]
 
 [dependency-groups]
 format = ["typos", "ruff"]
-check = ["bandit", "mypy"]
+check = ["bandit", "mypy", "pip-audit"]
