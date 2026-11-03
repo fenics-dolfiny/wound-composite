@@ -41,7 +41,7 @@ jobs:
   status-check:
     name: ☑️
     if: always()
-    needs: [check]
+    needs: [check, format]
     runs-on: ubuntu-latest
     steps:
       - if: >-
