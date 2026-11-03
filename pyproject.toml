@@ -64,6 +64,9 @@ warn_unused_ignores = true
 show_error_codes = true
 ignore_missing_imports = true
 
+[tool.bandit.assert_used]
+skips = ["test/*"]
+
 [dependency-groups]
 format = ["typos", "ruff"]
-check = ["mypy"]
+check = ["bandit", "mypy"]

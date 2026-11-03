@@ -16,10 +16,13 @@ ruff:
 	uv run ruff format --check
 	uv run ruff check
 
-check: gitleaks mypy
+check: gitleaks bandit mypy
 
 gitleaks:
 	gitleaks detect --source . --verbose
+
+bandit: 
+	bandit --severity-level medium -r wound_composite test 
 
 install:
 	$(PYTHON) -m pip install -e .
