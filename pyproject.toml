@@ -54,5 +54,16 @@ ignore = [
 [tool.ruff.lint.pycodestyle]
 max-doc-length = 75
 
+[tool.mypy]
+disallow_untyped_defs = true
+disallow_any_unimported = false
+no_implicit_optional = true
+check_untyped_defs = true
+warn_return_any = true
+warn_unused_ignores = true
+show_error_codes = true
+ignore_missing_imports = true
+
 [dependency-groups]
 format = ["typos", "ruff"]
+check = ["mypy"]
