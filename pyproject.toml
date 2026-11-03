@@ -1,5 +1,32 @@
-[dependency-groups]
-format = ["typos", "ruff"]
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wound_composite"
+version = "0.0.0"
+dependencies = ["numpy"]
+requires-python = ">=3.11"
+authors = [
+  { name = "Paul T. Kühner", email = "paul.kuehner@uni.lu" },
+  { name = "Michal Habera", email = "michalhabera@uni.lu" },
+  { name = "Andreas Zilian", email = "andreaszilian@uni.lu" }
+]
+maintainers = [{ name = "Paul T. Kühner", email = "paul.kuehner@uni.lu" }]
+description = ""
+
+keywords = [""]
+classifiers = [
+  "Development Status :: 1 - Planning",
+  "Programming Language :: Python",
+]
+
+[project.urls]
+Repository = "https://github.com/fenics-dolfiny/wound-composite.git"
+"Bug Tracker" = "https://github.com/fenics-dolfiny/wound-composite/issues"
+
+[tool.setuptools]
+packages = ["wound_composite"]
 
 [tool.ruff]
 line-length = 100
@@ -26,3 +53,6 @@ ignore = [
 
 [tool.ruff.lint.pycodestyle]
 max-doc-length = 75
+
+[dependency-groups]
+format = ["typos", "ruff"]
