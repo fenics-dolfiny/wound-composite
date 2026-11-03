@@ -19,9 +19,12 @@ jobs:
   check:
     name: 🔎
     runs-on: ubuntu-latest
+    container: dolfiny/dolfiny:latest
     steps:
       - uses: actions/checkout@v5
-      - run: sudo apt install -y gitleaks
+      - run: apt-get update && apt-get install -y gitleaks
+      - run: pip install --group check
+      - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - run: make check
 
   format:
