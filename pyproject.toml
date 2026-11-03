@@ -9,8 +9,8 @@ dependencies = ["numpy"]
 requires-python = ">=3.11"
 authors = [
   { name = "Paul T. Kühner", email = "paul.kuehner@uni.lu" },
-  { name = "Michal Habera", email = "michalhabera@uni.lu" },
-  { name = "Andreas Zilian", email = "andreaszilian@uni.lu" }
+  { name = "Michal Habera", email = "michal.habera@uni.lu" },
+  { name = "Andreas Zilian", email = "andreas.zilian@uni.lu" }
 ]
 maintainers = [{ name = "Paul T. Kühner", email = "paul.kuehner@uni.lu" }]
 description = ""
