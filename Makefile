@@ -1,4 +1,8 @@
-all: format check
+.PHONY: install test
+
+PYTHON ?= python
+
+all: format check test
 
 format: prettier typos ruff
 
@@ -16,3 +20,9 @@ check: gitleaks
 
 gitleaks:
 	gitleaks detect --source . --verbose
+
+install:
+	$(PYTHON) -m pip install -e .
+
+test: install
+	$(PYTHON) -P -m pytest -n auto

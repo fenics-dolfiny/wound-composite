@@ -30,8 +30,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v7
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
+      - uses: astral-sh/setup-uv@v7
         with:
           python-version: "3.15"
       - run: npm install prettier prettier-plugin-toml
@@ -49,9 +48,11 @@ jobs:
         os:
           - ubuntu-24.04
           - ubuntu-24.04-arm
+    env:
+      PYTHON: python3
     steps:
       - uses: actions/checkout@v6
-      - run: python3 -m pytest -n auto -v test/
+      - run: make test
 
   status-check:
     name: ☑️
