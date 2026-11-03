@@ -1,2 +1,28 @@
 [dependency-groups]
 format = ["typos", "ruff"]
+
+[tool.ruff]
+line-length = 100
+indent-width = 4
+
+[tool.ruff.lint]
+select = [
+  "D",  # pydocstyle
+  "E",  # pycodestyle
+  "W",  # pycodestyle
+  "F",  # pyflakes
+  "I",  # isort - use standalone isort
+  "RUF",  # Ruff-specific rules
+  "UP",  # pyupgrade
+  "ICN",  # flake8-import-conventions
+  "NPY",  # numpy-specific rules
+  "FLY",  # use f-string not static joins
+]
+ignore = [
+  "D1",  # undocumented
+  "D203",  # incompatible with D211 `no-blank-line-before-class`
+  "D213",  # incomptabile with D212 `multi-line-summary-first-line`
+]
+
+[tool.ruff.lint.pycodestyle]
+max-doc-length = 75
