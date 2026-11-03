@@ -38,10 +38,25 @@ jobs:
       - run: uv sync --group format
       - run: make format
 
+  test:
+    name: ⚙️
+    needs: [format]
+    runs-on: ${{ matrix.os }}
+    container: dolfiny/dolfiny:latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-24.04
+          - ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v6
+      - run: python3 -m pytest -n auto -v test/
+
   status-check:
     name: ☑️
     if: always()
-    needs: [check, format]
+    needs: [check, format, test]
     runs-on: ubuntu-latest
     steps:
       - if: >-
