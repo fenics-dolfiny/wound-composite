@@ -1,6 +1,7 @@
 .PHONY: install test
 
 PYTHON ?= python
+COVERAGE_REPORT ?= /dev/null
 
 all: format check test
 
@@ -33,3 +34,7 @@ mypy: install
 
 test: install
 	$(PYTHON) -P -m pytest -n auto
+
+coverage: install
+	$(PYTHON) -P -m pytest -n auto --cov
+	$(PYTHON) -m coverage report --format=markdown >> "$(COVERAGE_REPORT)"

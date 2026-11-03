@@ -55,7 +55,11 @@ jobs:
       PYTHON: python3
     steps:
       - uses: actions/checkout@v6
-      - run: make test
+      - run: pip install --group test
+      - if: matrix.os == 'ubuntu-24.04'
+        run: make coverage COVERAGE_REPORT="$GITHUB_STEP_SUMMARY"
+      - if: matrix.os != 'ubuntu-24.04'
+        run: make test
 
   status-check:
     name: ☑️
