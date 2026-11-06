@@ -1,0 +1,18 @@
+{
+  "name": "wound-composite",
+  "image": "dolfiny/dolfiny:nightly",
+  "postCreateCommand": "apt-get update && apt-get install -y gitleaks npm && npm install prettier prettier-plugin-toml && pip install --group test --group format --group check uv && pip install -e .",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "anthropic.claude-code",
+        "charliermarsh.ruff",
+        "ms-python.python"
+      ],
+      "settings": {
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.formatOnSave": true
+      }
+    }
+  }
+}
