@@ -6,6 +6,8 @@ uv.lock
 .pytest_cache/
 .coverage
 
+docs/_build/
+
 node_modules/
 package.json
 package-lock.json

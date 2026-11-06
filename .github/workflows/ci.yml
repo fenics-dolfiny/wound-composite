@@ -61,10 +61,39 @@ jobs:
       - if: matrix.os != 'ubuntu-24.04'
         run: make test
 
+  docs:
+    name: 📚
+    runs-on: ubuntu-latest
+    container: dolfiny/dolfiny:latest
+    env:
+      PYTHON: python3
+    steps:
+      - uses: actions/checkout@v6
+      - run: pip install --group docs
+      - run: make docs
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: docs/_build/html
+
+  deploy:
+    name: 🚀
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [docs]
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
+
   status-check:
     name: ☑️
     if: always()
-    needs: [check, format, test]
+    needs: [check, format, test, docs]
     runs-on: ubuntu-latest
     steps:
       - if: >-

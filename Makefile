@@ -1,4 +1,4 @@
-.PHONY: install test
+.PHONY: install test docs
 
 PYTHON ?= python
 COVERAGE_REPORT ?= /dev/null
@@ -38,3 +38,6 @@ test: install
 coverage: install
 	$(PYTHON) -P -m pytest -n auto --cov
 	$(PYTHON) -m coverage report --format=markdown >> "$(COVERAGE_REPORT)"
+
+docs: install
+	$(PYTHON) -m sphinx -M html docs docs/_build -W --keep-going
