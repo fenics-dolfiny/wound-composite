@@ -26,7 +26,7 @@ Repository = "https://github.com/fenics-dolfiny/wound-composite.git"
 "Bug Tracker" = "https://github.com/fenics-dolfiny/wound-composite/issues"
 
 [tool.setuptools]
-packages = ["wound_composite"]
+packages = ["wound_composite", "wound_composite.layout"]
 
 [tool.ruff]
 line-length = 100
