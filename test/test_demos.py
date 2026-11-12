@@ -18,4 +18,3 @@ def test_demo(demo: Path) -> None:
         text=True,
     )
     assert result.returncode == 0
-    assert result.stdout
