@@ -9,7 +9,7 @@ from wound_composite.layout.templates import triad
 
 
 @pytest.mark.parametrize("_layout", [triad])
-def test_meshing(_layout: Callable[[], Layout]) -> None:
+def test_to_gmsh(_layout: Callable[[], Layout]) -> None:
     gmsh.initialize()
     convert.to_gmsh(layout := _layout())
     node_count = len(gmsh.model.getPhysicalGroups(0))
@@ -18,3 +18,9 @@ def test_meshing(_layout: Callable[[], Layout]) -> None:
 
     assert node_count == layout.x.shape[0]
     assert edge_count == layout.cells.shape[0]
+
+
+@pytest.mark.parametrize("_layout", [triad])
+def test_to_pyvista(_layout: Callable[[], Layout]) -> None:
+    plotter = convert.to_pyvista(_layout())
+    assert plotter is not None
