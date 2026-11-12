@@ -1,5 +1,6 @@
 import gmsh
 import numpy as np
+import pyvista as pv
 from numpy import typing as npt
 
 from wound_composite.layout import Layout
@@ -127,3 +128,71 @@ def to_gmsh(layout: Layout, name: str = "resolved") -> gmsh.model:
         gmsh.model.mesh.setTransfiniteCurve(tag, 2)
 
     return gmsh.model
+
+
+def to_pyvista(
+    layout: Layout, plotter: pv.Plotter = pv.Plotter(), string_width: float = 0.02
+) -> pv.Plotter:
+    labels = []
+    radius_bushing = float(np.max(layout.offset_r))
+    for vertex in range(layout.x.shape[0]):
+        x = layout.x[vertex]
+        direction = layout.orientation_array[vertex]
+
+        offset_h = None
+        for cell, (vertex_a, vertex_b) in enumerate(layout.cells):
+            if vertex == vertex_a:
+                offset_h = layout.offset_h[cell, 0]
+            elif vertex == vertex_b:
+                offset_h = layout.offset_h[cell, 1]
+        assert offset_h is not None
+
+        plotter.add_mesh(
+            pv.Arrow(start=x, direction=direction, scale=radius_bushing), color="black"
+        )
+        plotter.add_mesh(
+            pv.Tube(
+                pointa=x - direction * offset_h,
+                pointb=x + direction * offset_h,
+                radius=radius_bushing,
+            ),
+            opacity=0.5,
+        )
+        labels.append(pv.Label(f"v{vertex}", x, name="label"))
+
+    for cell, (vertex_a, vertex_b) in enumerate(layout.cells):
+        orient_a = layout.orientation_array[vertex_a]
+        orient_b = layout.orientation_array[vertex_b]
+
+        a_to_b = layout.x[vertex_b] - layout.x[vertex_a]
+
+        n_a_to_b_orient_a = np.cross(a_to_b, orient_a)
+        n_a_to_b_orient_a /= np.linalg.norm(n_a_to_b_orient_a)
+
+        a = layout.x[vertex_a].copy()
+        a += layout.offset_h[cell, 0] * orient_a
+        a += layout.offset_r[cell, 0] * n_a_to_b_orient_a
+
+        n_a_to_b_orient_b = np.cross(a_to_b, orient_b)
+        n_a_to_b_orient_b /= np.linalg.norm(n_a_to_b_orient_b)
+
+        b = layout.x[vertex_b].copy()
+        b += layout.offset_h[cell, 1] * orient_b
+        b += layout.offset_r[cell, 1] * n_a_to_b_orient_b
+
+        tube = pv.Tube(pointa=a, pointb=b, radius=string_width / 2, capping=True)
+        plotter.add_mesh(tube, color="grey")
+        labels.append(pv.Label(f"c{cell}", (a + b) / 2, name="label"))
+
+    for label in labels:
+        label.SetVisibility(False)
+        plotter.add_actor(label, render=False)
+
+    def toggle_indices() -> None:
+        for label in labels:
+            label.SetVisibility(not label.GetVisibility())
+        plotter.render()
+
+    plotter.add_key_event("i", toggle_indices)  # type: ignore
+
+    return plotter
