@@ -19,7 +19,7 @@ jobs:
   check:
     name: 🔎
     runs-on: ubuntu-latest
-    container: dolfiny/dolfiny:latest
+    container: dolfiny/dolfiny:nightly
     steps:
       - uses: actions/checkout@v5
       - run: apt-get update && apt-get install -y gitleaks
@@ -44,7 +44,7 @@ jobs:
     name: ⚙️
     needs: [format]
     runs-on: ${{ matrix.os }}
-    container: dolfiny/dolfiny:latest
+    container: dolfiny/dolfiny:nightly
     strategy:
       fail-fast: false
       matrix:
