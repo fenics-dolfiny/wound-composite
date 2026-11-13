@@ -2,6 +2,10 @@ import numpy as np
 
 from wound_composite.layout import Layout
 
+__all__ = [
+    "triad",
+]
+
 
 def triad() -> Layout:
     x = np.asarray([[0, 0, 0], [3, 0, 0], [0, -1, -3]], dtype=np.float64)

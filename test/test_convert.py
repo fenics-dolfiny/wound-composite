@@ -1,17 +1,12 @@
-from collections.abc import Callable
-
 import gmsh
-import pytest
 
 from wound_composite import convert
 from wound_composite.layout import Layout
-from wound_composite.layout.templates import triad
 
 
-@pytest.mark.parametrize("_layout", [triad])
-def test_to_gmsh(_layout: Callable[[], Layout]) -> None:
+def test_to_gmsh(layout: Layout) -> None:
     gmsh.initialize()
-    convert.to_gmsh(layout := _layout())
+    convert.to_gmsh(layout)
     node_count = len(gmsh.model.getPhysicalGroups(0))
     edge_count = len(gmsh.model.getPhysicalGroups(1))
     gmsh.finalize()
@@ -20,7 +15,6 @@ def test_to_gmsh(_layout: Callable[[], Layout]) -> None:
     assert edge_count == layout.cells.shape[0]
 
 
-@pytest.mark.parametrize("_layout", [triad])
-def test_to_pyvista(_layout: Callable[[], Layout]) -> None:
-    plotter = convert.to_pyvista(_layout())
+def test_to_pyvista(layout: Layout) -> None:
+    plotter = convert.to_pyvista(layout)
     assert plotter is not None
