@@ -14,8 +14,15 @@ def test_meshing(layout: Layout) -> None:
     vertex_im = mesh.topology.index_map(0)
     assert vertex_im.size_local == vertex_im.size_global == layout.x.shape[0]
 
+    mesh.topology.create_connectivity(0, 1)
+    vertices = np.arange(vertex_im.size_local, dtype=np.int32)
+    nodes = dolfinx.mesh.entities_to_geometry(mesh, 0, vertices).flatten()
+    vertex_to_layout = mesh.geometry.input_global_indices[nodes]
+
+    assert np.all(mesh.geometry.x[nodes] == layout.x[vertex_to_layout])
+
     c_to_v = mesh.topology.connectivity(1, 0)
-    assert np.all(layout.cells.flatten() == c_to_v.array)
+    assert np.all(layout.cells.flatten() == vertex_to_layout[c_to_v.array])
 
     vol = np.float64(0.0)
     for cell in layout.cells:
