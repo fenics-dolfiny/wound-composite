@@ -36,16 +36,11 @@ O0 = dolfinx.fem.functionspace(mesh, ("DG", 1, (3,)))
 V_u = dolfinx.fem.functionspace(mesh, ("P", 1, (3,)))
 V_r = dolfinx.fem.functionspace(mesh, ("P", 1, (3,)))
 
-# Lagrange multiplier
-V_lam = dolfinx.fem.functionspace(mesh, ("DG", 1, (3,)))
-
 # Define functions
 o0 = layout.offset
 
 u = dolfinx.fem.Function(V_u, name="displacement")
 r = dolfinx.fem.Function(V_r, name="rotation")
-o_rot = dolfinx.fem.Function(O0, name="rotated_offset")
-lam = dolfinx.fem.Function(V_lam, name="lagrange_multiplier")
 
 orientation = layout.orientation
 
@@ -125,10 +120,10 @@ def S(ε: ufl.classes.Expr) -> ufl.classes.Expr:
     return S  # type: ignore
 
 
-δm = ufl.TestFunctions(ufl.MixedFunctionSpace(V_u, V_r, O0, V_lam))
+δm = ufl.TestFunctions(ufl.MixedFunctionSpace(V_u, V_r))
 
 # Define state as (ordered) list of functions
-m = [u, r, o_rot, lam]
+m = [u, r]
 
 # Undeformed configuration
 x0 = ufl.SpatialCoordinate(mesh)
@@ -137,6 +132,7 @@ x1 = x0 + o0
 
 t0, t1 = tangents(orientation)
 rotated_o0 = rotate(rotate(rotate(o0, orientation, r[2]), t1, r[1]), t0, r[0])
+o_rot = ufl.interpolate(rotated_o0, O0)
 
 x2 = x0 + o_rot
 x3 = x2 + u
@@ -199,13 +195,9 @@ def W_density(ε: ufl.classes.Expr) -> ufl.classes.Expr:
 Pi_mech = W_density(Em) * A * norm(J_01 * gs0) * dx
 Pi_ext = ufl.inner(u, F_ext) * dP(1)
 
-exact_rotation = rotate(rotate(rotate(o0, orientation, r[2]), t1, r[1]), t0, r[0])
-constraint_gap = o_rot - exact_rotation
-L_constraint = ufl.inner(lam, constraint_gap) * dx(metadata={"quadrature_rule": "vertex"})
+Pi = Pi_mech - Pi_ext
 
-Lagrangian = Pi_mech - Pi_ext + L_constraint
-
-residual = [ufl.derivative(Lagrangian, _u, _δu) for _u, _δu in zip(m, δm)]
+residual = [ufl.derivative(Pi, _u, _δu) for _u, _δu in zip(m, δm)]
 
 # Options for PETSc backend
 opts = PETSc.Options(name := "solver")
@@ -224,28 +216,33 @@ problem = dolfiny.snesproblem.SNESProblem(residual, m, prefix=name, bcs=bcs)
 # Solve nonlinear problem
 u.x.array[:] = 0.0
 r.x.array[:] = 0.0
-o_rot.x.array[:] = o0.x.array[:]
-lam.x.array[:] = 0.0
 
-problem.solve(u_init=[u, r, o_rot, lam])
+problem.solve(u_init=[u, r])
 problem.status(error_on_failure=True)
 
 
 # Post process
-V_N = dolfinx.fem.functionspace(mesh, ("DG", 0))
-N_f = dolfinx.fem.Function(V_N, name="normal force")
-N_f.interpolate(dolfinx.fem.Expression(N_tangential, V_N.element.interpolation_points))
-
-V_N_o = dolfinx.fem.functionspace(mesh, ("DG", 1))
-N_f_o = dolfinx.fem.Function(V_N_o, name="normal force")
-N_f_o.interpolate(N_f)
-
-
 def interpolate_O0(expr: ufl.classes.Expr, name: str = "") -> dolfinx.fem.Function:
     f = dolfinx.fem.Function(O0, name=name)
     expr_compiled = dolfinx.fem.Expression(expr, O0.element.interpolation_points)
     f.interpolate(expr_compiled)
     return f
+
+
+# TODO: interpolate expression support
+int_rotated_o0 = interpolate_O0(rotated_o0, "rotated_o0")
+
+V_N = dolfinx.fem.functionspace(mesh, ("DG", 0))
+N_f = dolfinx.fem.Function(V_N, name="normal force")
+N_f.interpolate(
+    dolfinx.fem.Expression(
+        ufl.replace(N_tangential, {o_rot: int_rotated_o0}), V_N.element.interpolation_points
+    )
+)
+
+V_N_o = dolfinx.fem.functionspace(mesh, ("DG", 1))
+N_f_o = dolfinx.fem.Function(V_N_o, name="normal force")
+N_f_o.interpolate(N_f)
 
 
 with dolfinx.io.VTXWriter(
@@ -254,7 +251,7 @@ with dolfinx.io.VTXWriter(
     [
         o0,
         int_u := interpolate_O0(u, u.name),
-        int_rotated_o0 := interpolate_O0(o_rot, "rotated_o0"),
+        int_rotated_o0,
         interpolate_O0(t0, "tangent 0"),
         interpolate_O0(t1, "tangent 1"),
         N_f_o,
